@@ -1,7 +1,15 @@
-To run the project first export environment variable by execute the bash command
+To run the project add .env.local file
 
-export bazaar_jwtPrivateKey=mySecureKey  
+touch .env.local 
+
+with content of :
+
+MONGODB_URI="mongodb://localhost:27017/bazaardb"
+
+SERVER=http://localhost:3000
+
+bazaar_jwtPrivateKey=YOURSUPERCOMPLEXSECUREKEY
  
-then import products.json into products collection.
+import products.json into products collection.
 
 then run yarn && yarn dev
