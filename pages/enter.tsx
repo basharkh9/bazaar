@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FormEvent, useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { UserContext } from "../lib/context";
 import { sendPostRequest } from "../lib/hooks";
 import styles from "../styles/Enter.module.css";
 
 const SERVER = process.env.SERVER;
+const notify = (message: string) => toast(message);
 
 export default function EnterPage() {
   const { user } = useContext<null | any>(UserContext);
@@ -31,7 +33,15 @@ export default function EnterPage() {
       },
       "json",
       true
-    );
+    ).catch((e) => {
+      console.log(e);
+    });
+
+    if (!res) {
+      notify("Registeration Failed.");
+      return;
+    }
+    notify("Registered Seccessfully.");
     localStorage.setItem("token", res.token);
     router.reload();
   };
@@ -44,8 +54,17 @@ export default function EnterPage() {
         password: password,
       },
       "text"
-    );
+    ).catch((e) => {
+      notify(e.message);
+    });
+
+    if (!token) {
+      notify("Login Failed.");
+      return;
+    }
+
     localStorage.setItem("token", token);
+    notify("Login Success.");
     router.reload();
   };
 

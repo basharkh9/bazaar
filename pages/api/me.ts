@@ -3,13 +3,16 @@ import dbConnect from "../../lib/dbConnect";
 import { User } from "../../models/user";
 import { ResponseFuncs } from "../../utils/types";
 import auth from "../../middleware/auth";
+import { logger } from "../../lib/error";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await dbConnect();
 
+  const catcher = (error: Error) => {
+    logger(error);
+    res.status(400).json({ error });
+  };
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs;
-
-  const catcher = (error: Error) => res.status(400).json({ error });
 
   const handleCase: ResponseFuncs = {
     GET: async (req: NextApiRequest, res: NextApiResponse) => {

@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import { catcher, logger } from "./error";
 
 const serverAPI = process.env.SERVER + "/" + "api";
 
@@ -17,16 +19,16 @@ export async function sendPostRequest(
       body: JSON.stringify(postData),
     });
     if (!res.ok) {
-      const message = `An error has occured: ${res.status} - ${res.statusText}`;
-      throw new Error(message);
+      res.text().then((message) => toast(message));
     }
 
     switch (responeType) {
       case "json":
-        if (includeHeader) return fortmatResponse(res, includeHeader);
-        return await res.json().catch((e) => console.log(e));
+        if (includeHeader)
+          return fortmatResponse(res as Response, includeHeader);
+        return await res?.json();
       case "text":
-        return await res.text().catch((e) => console.log(e));
+        return await res?.text();
       default:
         throw new Error("Response type unknown");
     }
@@ -51,7 +53,7 @@ export async function getUserByToken(storedToken: string) {
   if (storedToken) {
     initialuser = await fetch(`${serverAPI}/me`, {
       headers: new Headers({ "x-auth-token": storedToken }),
-    }).catch((e) => {});
+    });
   }
 
   return initialuser;
@@ -68,7 +70,7 @@ export function useValidateUserToken() {
       const user = await fetch(`${serverAPI}/me`, {
         headers: new Headers({ "x-auth-token": storedToken as string }),
       });
-      setUser(await user.json());
+      if (user) setUser(await user.json());
     };
     if (storedToken) fetchData().catch(console.error);
     else setUser(null);

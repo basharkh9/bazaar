@@ -4,17 +4,16 @@ import { User, validateUser } from "../../models/user";
 import _ from "lodash";
 import bcrypt from "bcrypt";
 import { ResponseFuncs } from "../../utils/types";
-import { logger } from "../../middleware/error";
+import { logger } from "../../lib/error";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  await dbConnect();
-
-  const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs;
-
   const catcher = (error: Error) => {
     logger(error);
     res.status(400).json({ error });
   };
+  await dbConnect();
+
+  const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs;
 
   const handleCase: ResponseFuncs = {
     GET: async (req: NextApiRequest, res: NextApiResponse) => {

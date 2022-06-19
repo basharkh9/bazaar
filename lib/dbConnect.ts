@@ -2,6 +2,7 @@ declare global {
   var mongoose: any;
 }
 import mongoose from "mongoose";
+import { catcher } from "./error";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -40,7 +41,7 @@ async function dbConnect() {
         })
         .catch((err) => console.log(err));
   }
-  cached.conn = await cached.promise;
+  cached.conn = await cached.promise.catch(catcher);
   return cached.conn;
 }
 

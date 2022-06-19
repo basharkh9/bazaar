@@ -11,14 +11,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const method: keyof ResponseFuncs = req.method as keyof ResponseFuncs;
 
-  const catcher = (error: Error) => res.status(400).json({ error });
+  const catcher = (error: Error) => {
+    res.status(400).json({ error });
+  };
 
   const handleCase: ResponseFuncs = {
     POST: async (req: NextApiRequest, res: NextApiResponse) => {
       const { error } = validate(req.body);
       if (error) return res.status(400).send(error.details[0].message);
 
-      let user = await User.findOne({ email: req.body.email }).catch(catcher);
+      let user = await User.findOne({ email: req.body.email });
       if (!user) return res.status(400).send("Invalid email or password.");
 
       const validPassword = await bcrypt.compare(
